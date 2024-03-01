@@ -24,10 +24,6 @@ melior_macro::dialect! {
     table_gen: r#"include "mlir/Dialect/ArmNeon/ArmNeon.td""#
 }
 melior_macro::dialect! {
-    name: "arm_sve",
-    table_gen: r#"include "mlir/Dialect/ArmSVE/ArmSVE.td""#
-}
-melior_macro::dialect! {
     name: "async",
     table_gen: r#"include "mlir/Dialect/Async/IR/AsyncOps.td""#
 }
@@ -46,6 +42,10 @@ melior_macro::dialect! {
 melior_macro::dialect! {
     name: "index",
     table_gen: r#"include "mlir/Dialect/Index/IR/IndexOps.td""#
+}
+melior_macro::dialect! {
+    name: "irdl",
+    table_gen: r#"include "mlir/Dialect/IRDL/IR/IRDLOps.td""#
 }
 melior_macro::dialect! {
     name: "llvm",
