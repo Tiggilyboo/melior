@@ -43,10 +43,13 @@ melior_macro::dialect! {
     name: "index",
     table_gen: r#"include "mlir/Dialect/Index/IR/IndexOps.td""#
 }
+/*
+// Requires some changes to LLVM include pathing in IRDLAttributes.td (include "IRDL.h" without relative mlir path
 melior_macro::dialect! {
     name: "irdl",
     table_gen: r#"include "mlir/Dialect/IRDL/IR/IRDLOps.td""#
 }
+*/
 melior_macro::dialect! {
     name: "llvm",
     // spell-checker: disable-next-line

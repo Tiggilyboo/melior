@@ -37,10 +37,9 @@ pub fn opaque_pointer(context: &Context) -> Type {
     Type::parse(context, "!llvm.ptr").unwrap()
 }
 
-/// Creates an LLVM pointer type.
-pub fn pointer(r#type: Type, address_space: u32) -> Type {
-    let ctx = r#type.context().to_raw();
-    unsafe { Type::from_raw(mlirLLVMPointerTypeGet(ctx, address_space)) }
+/// Creates an LLVM opaque pointer type with address space
+pub fn pointer(context: &Context, address_space: u32) -> Type {
+    unsafe { Type::from_raw(mlirLLVMPointerTypeGet(context.to_raw(), address_space)) }
 }
 
 /// Creates an LLVM struct type.
@@ -85,23 +84,12 @@ mod tests {
     }
 
     #[test]
-    fn pointer() {
-        let context = create_context();
-        let i32 = IntegerType::new(&context, 32).into();
-
-        assert_eq!(
-            super::pointer(i32, 0),
-            Type::parse(&context, "!llvm.ptr<i32>").unwrap()
-        );
-    }
-
-    #[test]
     fn pointer_with_address_space() {
         let context = create_context();
-        let i32 = IntegerType::new(&context, 32).into();
+        let i32: Type = IntegerType::new(&context, 32).into();
 
         assert_eq!(
-            super::pointer(i32, 4),
+            super::pointer(&context, 4),
             Type::parse(&context, "!llvm.ptr<i32, 4>").unwrap()
         );
     }

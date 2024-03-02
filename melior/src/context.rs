@@ -166,10 +166,6 @@ impl<'c> ContextRef<'c> {
             _reference: Default::default(),
         }
     }
-
-    pub fn to_raw(&self) -> MlirContext {
-        self.raw
-    }
 }
 
 impl<'c> PartialEq for ContextRef<'c> {
