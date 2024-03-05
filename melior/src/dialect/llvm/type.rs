@@ -61,6 +61,8 @@ pub fn void(context: &Context) -> Type {
 
 #[cfg(test)]
 mod tests {
+    use mlir_sys::{mlirIntegerSetEmptyGet, MlirIntegerSet};
+
     use super::*;
     use crate::{dialect, ir::r#type::IntegerType};
 

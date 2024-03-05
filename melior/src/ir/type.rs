@@ -5,6 +5,7 @@ mod r#macro;
 mod function;
 pub mod id;
 mod integer;
+mod integer_set;
 mod mem_ref;
 mod ranked_tensor;
 mod shaped_type_like;

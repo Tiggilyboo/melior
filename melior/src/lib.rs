@@ -4,6 +4,7 @@ extern crate self as melior;
 
 #[macro_use]
 mod r#macro;
+mod affine_expr;
 mod context;
 pub mod diagnostic;
 pub mod dialect;
