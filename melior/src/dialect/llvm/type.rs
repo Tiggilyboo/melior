@@ -61,7 +61,7 @@ pub fn void(context: &Context) -> Type {
 
 #[cfg(test)]
 mod tests {
-    use mlir_sys::{mlirIntegerSetEmptyGet, MlirIntegerSet};
+    use std::array;
 
     use super::*;
     use crate::{dialect, ir::r#type::IntegerType};
@@ -88,15 +88,20 @@ mod tests {
     #[test]
     fn pointer_with_address_space() {
         let context = create_context();
-        let i32: Type = IntegerType::new(&context, 32).into();
+        let ptr = super::pointer(&context, 42);
 
-        assert_eq!(
-            super::pointer(&context, 4),
-            Type::parse(&context, "!llvm.ptr<i32, 4>").unwrap()
-        );
+        assert_eq!(ptr, Type::parse(&context, "!llvm.ptr<42>").unwrap());
     }
 
     #[test]
+    fn pointer_with_address_space_zero() {
+        let context = create_context();
+        let ptr = super::pointer(&context, 0);
+
+        assert_eq!(ptr, Type::parse(&context, "!llvm.ptr").unwrap());
+    }
+    #[test]
+
     fn void() {
         let context = create_context();
 
@@ -109,10 +114,11 @@ mod tests {
     #[test]
     fn array() {
         let context = create_context();
-        let i32 = IntegerType::new(&context, 32).into();
+        let i32_type = IntegerType::new(&context, 32).into();
+        let array = super::array(i32_type, 4);
 
         assert_eq!(
-            super::array(i32, 4),
+            array,
             Type::parse(&context, "!llvm.array<4 x i32>").unwrap()
         );
     }

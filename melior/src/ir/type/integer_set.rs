@@ -15,6 +15,7 @@ pub struct IntegerSet<'c> {
     _context: PhantomData<&'c Context>,
 }
 
+#[allow(dead_code)]
 impl<'c> IntegerSet<'c> {
     // Gets or creates a new integer set in the given context. The set is defined
     /// by a list of affine constraints, with the given number of input dimensions
