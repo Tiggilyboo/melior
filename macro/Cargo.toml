@@ -20,10 +20,10 @@ proc-macro2 = "1"
 quote = "1"
 regex = "1.10.3"
 syn = { version = "2", features = ["full"] }
-tblgen = { git = "https://github.com/Tiggilyboo/tblgen-rs", branch="llvm18", features = ["llvm18-0"], default-features = false }
+tblgen = { path = "../../tblgen-rs", features = ["llvm18-0"], default-features = false }
 unindent = "0.2.3"
 
 [dev-dependencies]
-melior = { git = "https://github.com/Tiggilyboo/melior", branch="llvm18", features = ["ods-dialects"] }
-mlir-sys = { git = "https://github.com/Tiggilyboo/mlir-sys", branch="llvm18" }
+melior = { path = "../melior", features = ["ods-dialects"] }
+mlir-sys = { path = "../../mlir-sys" }
 pretty_assertions = "1.4.0"

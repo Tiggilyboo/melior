@@ -43,13 +43,10 @@ melior_macro::dialect! {
     name: "index",
     table_gen: r#"include "mlir/Dialect/Index/IR/IndexOps.td""#
 }
-/*
-// Requires some changes to LLVM include pathing in IRDLAttributes.td (include "IRDL.h" without relative mlir path
 melior_macro::dialect! {
     name: "irdl",
-    table_gen: r#"include "mlir/Dialect/IRDL/IR/IRDLOps.td""#
+    table_gen: r#"include "mlir/Dialect/IRDL/IR/IRDL.td""#
 }
-*/
 melior_macro::dialect! {
     name: "llvm",
     // spell-checker: disable-next-line
@@ -180,7 +177,7 @@ mod tests {
         convert_module(context, &mut module);
 
         assert!(module.as_operation().verify());
-        insta::assert_display_snapshot!(name, module.as_operation());
+        insta::assert_snapshot!(name, module.as_operation());
     }
 
     #[test]
@@ -228,6 +225,7 @@ mod tests {
         let context = create_test_context();
         let location = Location::unknown(&context);
         let integer_type = IntegerType::new(&context, 64).into();
+        let integer_type_attr = TypeAttribute::new(integer_type);
 
         test_operation("alloc", &context, &[integer_type], |block| {
             let alloca_size = block.argument(0).unwrap().into();
@@ -235,8 +233,9 @@ mod tests {
             block.append_operation(
                 llvm::alloca(
                     &context,
-                    dialect::llvm::r#type::pointer(integer_type, 0),
+                    dialect::llvm::r#type::pointer(&context, 0),
                     alloca_size,
+                    integer_type_attr,
                     location,
                 )
                 .into(),
