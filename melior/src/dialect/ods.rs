@@ -111,7 +111,6 @@ melior_macro::dialect! {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use crate::{
         dialect::{self, func},
         ir::{
@@ -123,6 +122,8 @@ mod tests {
         test::create_test_context,
         Context,
     };
+
+    use super::arith;
 
     fn convert_module<'c>(context: &'c Context, module: &mut Module<'c>) {
         let pass_manager = PassManager::new(context);
@@ -231,7 +232,7 @@ mod tests {
             let alloca_size = block.argument(0).unwrap().into();
 
             block.append_operation(
-                llvm::alloca(
+                super::llvm::alloca(
                     &context,
                     dialect::llvm::r#type::pointer(&context, 0),
                     alloca_size,
@@ -256,7 +257,7 @@ mod tests {
             let alloca_size = block.argument(0).unwrap().into();
 
             block.append_operation(
-                llvm::AllocaOperationBuilder::new(&context, location)
+                super::llvm::AllocaOperationBuilder::new(&context, location)
                     .alignment(IntegerAttribute::new(integer_type, 8))
                     .elem_type(TypeAttribute::new(integer_type))
                     .array_size(alloca_size)

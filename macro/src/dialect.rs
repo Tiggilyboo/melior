@@ -74,7 +74,7 @@ fn generate_dialect_module(
 
     let doc = format!(
         "`{name}` dialect.\n\n{}",
-        sanitize_documentation(dialect.str_value("description").unwrap_or(""),)?
+        sanitize_documentation(dialect.str_value("description").unwrap_or(""))?,
     );
     let name = sanitize_snake_case_identifier(name)?;
 

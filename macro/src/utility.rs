@@ -1,13 +1,18 @@
-use once_cell::sync::Lazy;
+use std::sync::OnceLock;
+
 use regex::{Captures, Regex};
 
-static NAME_PATTERN: Lazy<Regex> = Lazy::new(|| {
-    Regex::new(r#"(bf_16|f_16|f_32|f_64|i_8|i_16|i_32|i_64|float_8_e_[0-9]_m_[0-9](_fn)?)"#)
-        .unwrap()
-});
+static NAME_PATTERN: OnceLock<Regex> = OnceLock::new();
+
+fn get_name_pattern() -> &'static Regex {
+    NAME_PATTERN.get_or_init(|| {
+        Regex::new(r#"(bf_16|f_16|f_32|f_64|i_8|i_16|i_32|i_64|float_8_e_[0-9]_m_[0-9](_fn)?)"#)
+            .unwrap()
+    })
+}
 
 pub fn map_name(name: &str) -> String {
-    NAME_PATTERN
+    get_name_pattern()
         .replace_all(name, |captures: &Captures| {
             captures.get(0).unwrap().as_str().replace('_', "")
         })

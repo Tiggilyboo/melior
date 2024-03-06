@@ -19,26 +19,6 @@ pub fn sanitize_snake_case_identifier(name: &str) -> Result<Ident, Error> {
     sanitize_name(&name.to_case(Case::Snake))
 }
 
-fn sanitize_name(name: &str) -> Result<Ident, Error> {
-    // Replace any "." with "_".
-    let mut name = name.replace('.', "_");
-
-    // Add "_" suffix to avoid conflicts with existing methods.
-    if RESERVED_NAMES.contains(&name.as_str())
-        || name
-            .chars()
-            .next()
-            .ok_or_else(|| Error::InvalidIdentifier(name.clone()))?
-            .is_numeric()
-    {
-        name = format!("_{}", name);
-    }
-
-    // Try to parse the string as an ident, and prefix the identifier
-    // with "r#" if it is not a valid identifier.
-    Ok(syn::parse_str::<Ident>(&name).unwrap_or(format_ident!("r#{}", name)))
-}
-
 pub fn sanitize_documentation(string: &str) -> Result<String, Error> {
     let arena = Arena::new();
     let node = parse_document(&arena, &unindent::unindent(string), &Default::default());
@@ -63,6 +43,26 @@ pub fn sanitize_documentation(string: &str) -> Result<String, Error> {
     format_commonmark(node, &Default::default(), &mut buffer)?;
 
     Ok(String::from_utf8(buffer)?)
+}
+
+fn sanitize_name(name: &str) -> Result<Ident, Error> {
+    // Replace any "." with "_".
+    let mut name = name.replace('.', "_");
+
+    // Add "_" suffix to avoid conflicts with existing methods.
+    if RESERVED_NAMES.contains(&name.as_str())
+        || name
+            .chars()
+            .next()
+            .ok_or_else(|| Error::InvalidIdentifier(name.clone()))?
+            .is_numeric()
+    {
+        name = format!("_{}", name);
+    }
+
+    // Try to parse the string as an ident, and prefix the identifier
+    // with "r#" if it is not a valid identifier.
+    Ok(syn::parse_str::<Ident>(&name).unwrap_or(format_ident!("r#{}", name)))
 }
 
 pub fn capitalize_string(string: &str) -> String {
@@ -101,7 +101,6 @@ mod tests {
             "_builder"
         );
     }
-
     #[test]
     fn sanitize_code_block() {
         assert_eq!(

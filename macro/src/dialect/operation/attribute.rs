@@ -3,10 +3,9 @@ use crate::dialect::{
     operation::operation_field::OperationField,
     utility::{generate_result_type, sanitize_snake_case_identifier},
 };
-use once_cell::sync::Lazy;
 use proc_macro2::{Span, TokenStream};
 use quote::quote;
-use std::collections::HashMap;
+use std::{collections::HashMap, sync::OnceLock};
 use syn::{parse_quote, Ident, Type};
 use tblgen::{error::TableGenError, Record};
 
@@ -28,10 +27,13 @@ macro_rules! melior_attribute {
     };
 }
 
-static ATTRIBUTE_TYPES: Lazy<HashMap<&'static str, &'static str>> = Lazy::new(|| {
-    let mut map = HashMap::new();
+static ATTRIBUTE_TYPES: OnceLock<HashMap<&'static str, &'static str>> = OnceLock::new();
 
-    macro_rules! initialize_attributes {
+fn get_attribute_types() -> &'static HashMap<&'static str, &'static str> {
+    ATTRIBUTE_TYPES.get_or_init(|| {
+        let mut map = HashMap::new();
+
+        macro_rules! initialize_attributes {
         ($($mlir:ident => $melior:ident),* $(,)*) => {
             $(
                 map.insert(
@@ -42,20 +44,21 @@ static ATTRIBUTE_TYPES: Lazy<HashMap<&'static str, &'static str>> = Lazy::new(||
         };
     }
 
-    initialize_attributes!(
-        ArrayAttr => ArrayAttribute,
-        Attribute => Attribute,
-        DenseElementsAttr => DenseElementsAttribute,
-        DenseI32ArrayAttr => DenseI32ArrayAttribute,
-        FlatSymbolRefAttr => FlatSymbolRefAttribute,
-        FloatAttr => FloatAttribute,
-        IntegerAttr => IntegerAttribute,
-        StringAttr => StringAttribute,
-        TypeAttr => TypeAttribute,
-    );
+        initialize_attributes!(
+            ArrayAttr => ArrayAttribute,
+            Attribute => Attribute,
+            DenseElementsAttr => DenseElementsAttribute,
+            DenseI32ArrayAttr => DenseI32ArrayAttribute,
+            FlatSymbolRefAttr => FlatSymbolRefAttribute,
+            FloatAttr => FloatAttribute,
+            IntegerAttr => IntegerAttribute,
+            StringAttr => StringAttribute,
+            TypeAttr => TypeAttribute,
+        );
 
-    map
-});
+        map
+    })
+}
 
 #[derive(Debug)]
 pub struct Attribute<'a> {
@@ -79,7 +82,7 @@ impl<'a> Attribute<'a> {
             set_identifier: sanitize_snake_case_identifier(&format!("set_{name}"))?,
             remove_identifier: sanitize_snake_case_identifier(&format!("remove_{name}"))?,
             storage_type: syn::parse_str(
-                ATTRIBUTE_TYPES
+                get_attribute_types()
                     .get(storage_type_string.trim())
                     .copied()
                     .unwrap_or(melior_attribute!(Attribute)),
